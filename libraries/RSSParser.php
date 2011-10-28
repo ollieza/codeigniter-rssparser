@@ -25,43 +25,40 @@ class RSSParser
     var $feed_unavailable;
 
     /* Cache lifetime */
-    var $cache_life;
+    var $cache_life = 0;
 
     /* Flag to write to cache - defaulted to false*/
     var $write_cache_flag = false;
 
-    /* Code Ignitor cache directory */
-    var $cache_dir;
+    /* Cache directory */
+    var $cache_dir = './application/cache/';
 
     // ================ //
     // Constructor      //
     // ================ //
-    function RSSParser($params) {
+    function RSSParser() {
           $this->CI =& get_instance();
-          $this->cache_dir = ($this->CI->config->item('cache_path') == '') ? BASEPATH.'cache/' : $this->CI->config->item('cache_path');
 
-          //$this->cache_dir = '/system/cache';
-          $this->cache_life = $params['life'];
+          $this->cache_dir = './application/cache/';
+          $this->cache_life = 0; // in minutes
     
-          $this->feed_uri = $params['url'];
+          $this->feed_uri = '';
           $this->current_feed["title"] = '';
           $this->current_feed["description"] = '';
           $this->current_feed["link"] = '';
           $this->data = array();
           $this->channel_data = array();
-    
-          //Attempt to parse the feed
-          $this->parse();
     }
 
     // =============== //
     // Methods         //
     // =============== //
     function parse() {
+
+	
         //Are we caching?
         if ($this->cache_life != 0)
         {
-
             $filename = $this->cache_dir.'rss_Parse_'.md5($this->feed_uri);
 
             //is there a cache file ?
@@ -69,14 +66,15 @@ class RSSParser
             {
                 //Has it expired?
                 $timedif = (time() - filemtime($filename));
+				
                 if ($timedif < ( $this->cache_life * 60))
                 {
-                    //its ok - so we can skip all the parsing and just return the cached array here
-                    $this->data = unserialize(implode('', file($filename)));
-                    return true;
-                }
-               //So raise the falg
-               $this->write_cache_flag = true;
+					$rawFeed = file_get_contents($filename);
+
+                } else {
+				   //So raise the falg
+				   $this->write_cache_flag = true;
+				}
 
             } else {
                //Raise the flag to write the cache
@@ -84,9 +82,19 @@ class RSSParser
             }
        }
 
+		// Reset
+	   $this->current_feed["title"] = '';
+       $this->current_feed["description"] = '';
+       $this->current_feed["link"] = '';
+       $this->data = array();
+       $this->channel_data = array();
 
       //Parse the document
-      $rawFeed = file_get_contents($this->feed_uri);
+      if (!isset($rawFeed))
+	  {
+      	$rawFeed = file_get_contents($this->feed_uri);
+	  }
+	  
       $xml = new SimpleXmlElement($rawFeed);
 
       //Assign the channel data
@@ -110,17 +118,27 @@ class RSSParser
             if ( ! $fp = @fopen($filename, 'wb'))
             {
                 echo "ERROR";
-                log_message('error', "Unable to write cache file: ".$cache_path);
+                log_message('error', "Unable to write cache file: ");
                 return;
             }
             flock($fp, LOCK_EX);
-            fwrite($fp, serialize($this->data));
+            fwrite($fp, $rawFeed);
             flock($fp, LOCK_UN);
             fclose($fp);
       }
       return true;
   }
-
+	
+	function set_cache_life($period = NULL)
+	{
+		$this->cache_life = $period;
+	}
+	
+	function set_feed_url($url = NULL)
+	{
+		$this->feed_uri = $url;
+	}
+	
     /* Return the feeds one at a time: when there are no more feeds return false
      * @param No of items to return from the feed
      * @return Associative array of items
