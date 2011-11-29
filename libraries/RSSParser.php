@@ -205,7 +205,7 @@ class RSSParser {
 
 	// --------------------------------------------------------------------
 
-    /* Return channel data for the feed */
+	/* Return channel data for the feed */
 	function & getChannelData()
 	{
 		$flag = false;
