@@ -6,14 +6,15 @@
  * All credit should be given to the original author
  *
  * Example:
-	$this->load->library('rssparser', array(
-		'feed_uri' => 'FEED_URI',
-		'callback' => array($this, 'parseFile') // parseFile method of current class
-	));
-	// Get six items from the feed
-	$rss = $this->rssparser->getFeed(6);
 
-	// ...
+	$this->load->library('rssparser');
+	$this->rssparser->set_feed_url('http://example.com/feed');
+	$this->rssparser->set_cache_life(30);
+	$rss = $this->rssparser->getFeed(6);  // Get six items from the feed
+
+	// Using a callback function to parse addictional XML fields
+
+	$this->load->library('rssparser', array($this, 'parseFile')); // parseFile method of current class
 
 	function parseFile($data, $item)
 	{
@@ -33,18 +34,13 @@ class RSSParser {
 	var $write_cache_flag = FALSE; // Flag to write to cache - defaulted to false
 	var $callback = FALSE; // Callback to read custom data
 
-	function RSSParser($opts=array())
+	function RSSParser($callback = FALSE)
 	{
-		if (isset($opts['feed_uri']))
+		if ($callback)
 		{
-			$this->feed_uri = $opts['feed_uri'];
+			$this->callback = $callback;
 		}
-			
-		if (isset($opts['callback']))
-		{
-			$this->callback = $opts['callback'];
-		}
-
+		
 		$this->current_feed['title'] = '';
 		$this->current_feed['description'] = '';
 		$this->current_feed['link'] = '';
