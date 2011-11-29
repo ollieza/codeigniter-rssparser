@@ -29,7 +29,7 @@ class RSSParser {
 	var $channel_data = array(); // Store RSS Channel Data in an array
 	var $feed_unavailable; // Boolean variable which indicates whether an RSS feed was unavailable
 	var $cache_life = 0; // Cache lifetime
-	var $cache_dir = './system/cache/'; // Cache directory
+	var $cache_dir = './application/cache/'; // Cache directory
 	var $write_cache_flag = FALSE; // Flag to write to cache - defaulted to false
 	var $callback = FALSE; // Callback to read custom data
 
