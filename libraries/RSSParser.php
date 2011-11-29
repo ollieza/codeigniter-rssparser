@@ -44,8 +44,6 @@ class RSSParser {
 		{
 			$this->callback = $opts['callback'];
 		}
-		
-		$this->CI =& get_instance();
 
 		$this->current_feed['title'] = '';
 		$this->current_feed['description'] = '';
