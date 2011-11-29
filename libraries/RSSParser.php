@@ -35,11 +35,16 @@ class RSSParser {
 
 	function RSSParser($opts=array())
 	{
-		if(isset($opts['feed_uri']))
+		if (isset($opts['feed_uri']))
+		{
 			$this->feed_uri = $opts['feed_uri'];
-		if(isset($opts['callback']))
+		}
+			
+		if (isset($opts['callback']))
+		{
 			$this->callback = $opts['callback'];
-
+		}
+		
 		$this->CI =& get_instance();
 
 		$this->current_feed['title'] = '';
@@ -108,8 +113,12 @@ class RSSParser {
 				$data['description'] = (string)$item->description;
 				$data['pubDate'] = (string)$item->pubDate;
 				$data['link'] = (string)$item->link;
-				if($this->callback)
+				
+				if ($this->callback)
+				{
 					$data = call_user_func($this->callback, $data, $item);
+				}
+				
 				$this->data[] = $data;
 			}
 		}
@@ -128,8 +137,12 @@ class RSSParser {
 				$data['description'] = (string)$item->content;
 				$data['pubDate'] = (string)$item->published;
 				$data['link'] = (string)$item->link['href'];
-				if($this->callback)
+				
+				if ($this->callback)
+				{
 					$data = call_user_func($this->callback, $data, $item);
+				}
+					
 				$this->data[] = $data;
 			}
 		}
@@ -175,8 +188,11 @@ class RSSParser {
 	*/
 	function getFeed($num)
 	{
-		if(!$this->data)
+		if (!$this->data)
+		{
 			$this->parse();
+		}
+			
 		$c = 0;
 		$return = array();
 
