@@ -1,0 +1,30 @@
+RSSParser library - Production ready - CI 2.1.0 compatible
+====================================================================
+
+A simple library to pass RSS feeds.
+
+Usage:
+------
+
+$this->load->library('rssparser');
+$this->rssparser->set_feed_url('http://example.com/feed');
+$this->rssparser->set_cache_life(30);
+$rss = $this->rssparser->getFeed(6);  // Get six items from the feed
+
+Other functions:
+
+// Using a callback function to parse addictional XML fields
+
+$this->load->library('rssparser', array($this, 'parseFile')); // parseFile method of current class
+
+function parseFile($data, $item)
+{
+	$data['summary'] = (string)$item->summary;
+	return $data;
+}
+
+Extra
+-----
+
+If you'd like to request changes, report bug fixes, or contact
+the developer of this library, please email <orattue[at]toomanytabs.com>
