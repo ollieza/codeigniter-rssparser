@@ -107,6 +107,8 @@ class RSSParser {
 				$data['description'] = (string)$item->description;
 				$data['pubDate'] = (string)$item->pubDate;
 				$data['link'] = (string)$item->link;
+				$dc = $item->children('http://purl.org/dc/elements/1.1/');
+				$data['author'] = (string)$dc->creator;
 				
 				if ($this->callback)
 				{
@@ -131,6 +133,8 @@ class RSSParser {
 				$data['description'] = (string)$item->content;
 				$data['pubDate'] = (string)$item->published;
 				$data['link'] = (string)$item->link['href'];
+				$dc = $item->children('http://purl.org/dc/elements/1.1/');
+				$data['author'] = (string)$dc->creator;
 				
 				if ($this->callback)
 				{
@@ -229,6 +233,18 @@ class RSSParser {
 	}
 
 	// --------------------------------------------------------------------
+	
+	/* Initialize the feed data */ 
+	function clear()
+	{
+		$this->feed_uri		= NULL;
+		$this->data			= FALSE;
+		$this->channel_data	= array();
+		$this->cache_life	= 0;
+		$this->callback		= FALSE;
+		
+		return $this;
+	}
 }
 
 /* End of file RSSParser.php */
