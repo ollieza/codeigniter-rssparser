@@ -33,6 +33,7 @@ class RSSParser {
 	var $cache_dir = './application/cache/'; // Cache directory
 	var $write_cache_flag = FALSE; // Flag to write to cache - defaulted to false
 	var $callback = FALSE; // Callback to read custom data
+	public $isSecure = FALSE;
 
 	function RSSParser($callback = FALSE)
 	{
@@ -156,7 +157,13 @@ class RSSParser {
 			}
 
 			flock($fp, LOCK_EX);
-			fwrite($fp, $rawFeed);
+			if($this->isSecure){
+				fwrite($fp, str_replace("http://", "https://", $rawFeed));
+			}
+			else{
+				fwrite($fp, $rawFeed);
+			}
+			
 			flock($fp, LOCK_UN);
 			fclose($fp);
 		}
@@ -179,6 +186,14 @@ class RSSParser {
 	}
 
 	// --------------------------------------------------------------------
+	
+	function set_secure_content($isSecure = FALSE)
+	{
+			$this->isSecure = $isSecure;
+			return $this;
+	}
+	// --------------------------------------------------------------------
+
 
 	/* Return the feeds one at a time: when there are no more feeds return false
 	 * @param No of items to return from the feed
